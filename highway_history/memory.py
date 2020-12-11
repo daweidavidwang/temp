@@ -19,9 +19,9 @@ class ReplayMemory(Configurable):
 
     @classmethod
     def default_config(cls):
-        return dict(memory_capacity=10000,
+        return dict(memory_capacity=15000,
                     n_steps=1,
-                    gamma=0.99)
+                    gamma=0.8)
 
     def push(self, *args):
         """Saves a transition."""

@@ -96,7 +96,7 @@ class AbstractEnv(gym.Env):
                 "type": "DiscreteMetaAction"
             },
             "simulation_frequency": 10,  # [Hz]
-            "policy_frequency": 10,  # [Hz]
+            "policy_frequency": 1,  # [Hz]
             "other_vehicles_type": "highway_env.vehicle.behavior.IDMVehicle",
             "screen_width": 600,  # [px]
             "screen_height": 150,  # [px]
@@ -208,7 +208,7 @@ class AbstractEnv(gym.Env):
 
     def _simulate(self, action: Optional[Action] = None) -> None:
         """Perform several steps of simulation with constant action."""
-        for _ in range(int(self.config["simulation_frequency"] // self.config["policy_frequency"])):
+        for _ in range(int(self.config["simulation_frequency"] // self.config["simulation_frequency"])):
             # Forward action to the vehicle
             if action is not None \
                     and not self.config["manual_control"] \

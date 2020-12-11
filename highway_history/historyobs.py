@@ -10,7 +10,8 @@ from processonline import preProcess,vehicle
 class historyObs(object):
     def __init__(self):
         self.env = gym.make("highway-v0")
-        self.preprocess = preProcess(num_history = 20,disRange = 112)
+        self.frequency = 10
+        self.preprocess = preProcess(num_history = 10,disRange = 112)
 
     def decomposeObs(self,current_obs):
         obs_list = []
@@ -34,8 +35,12 @@ class historyObs(object):
         return obs
 
     def step(self,action):
-        obs,reward,done,info = self.env.step(action)
-        obs = self.preprocessObs(obs)
+        for i in range(self.frequency):
+            obs,reward,done,info = self.env.step(action)
+            obs = self.preprocessObs(obs)
+            self.env.render()
+            if done:
+                break
         return obs,reward,done,info
 
     def reset(self):
@@ -51,8 +56,8 @@ if __name__ == "__main__":
     for i in range(1000):
         action = ho.env.action_type.actions_indexes["IDLE"]
         obs,reward,done,info = ho.step(action)
+        print(obs.shape)
         ho.env.render()
-        print(obs) 
         if done:
             print("true")
             ho.reset()

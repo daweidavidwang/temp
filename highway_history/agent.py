@@ -16,22 +16,23 @@ class AbstractDQNAgent(AbstractStochasticAgent, ABC):
         self.exploration_policy = exploration_factory(self.config["exploration"], self.env.action_space)
         self.training = True
         self.previous_state = None
+        self.step = 0
 
     @classmethod
     def default_config(cls):
-        return dict(model=dict(type="VGG11"),
+        return dict(model=dict(type="FCN"),
                     optimizer=dict(type="ADAM",
                                    lr=5e-4,
                                    weight_decay=0,
                                    k=5),
                     loss_function="l2",
-                    memory_capacity=10000,
-                    batch_size=64,
-                    gamma=0.99,
+                    memory_capacity=15000,
+                    batch_size = 32,
+                    gamma=0.8,
                     device="cuda:best",
                     exploration=dict(method="EpsilonGreedy"),
-                    target_update=1,
-                    double=True)
+                    target_update=50,
+                    double=False)
 
     def record(self, state, action, reward, next_state, done, info):
         """
@@ -53,9 +54,14 @@ class AbstractDQNAgent(AbstractStochasticAgent, ABC):
         self.memory.push(state, action, reward, next_state, done, info)
         batch = self.sample_minibatch()
         if batch:
+            start_time = time.time()
             loss, _, _ = self.compute_bellman_residual(batch)
+            print("loss time : ",time.time() - start_time)
             self.step_optimizer(loss)
             self.update_target_network()
+            
+            self.writer.add_scalar('step/loss',loss,self.step)
+            self.step += 1
 
     def act(self, state):
         """
@@ -77,6 +83,7 @@ class AbstractDQNAgent(AbstractStochasticAgent, ABC):
     def update_target_network(self):
         self.steps += 1
         if self.steps % self.config["target_update"] == 0:
+            print("update target network!!!!!!")
             self.target_net.load_state_dict(self.value_net.state_dict())
 
     @abstractmethod

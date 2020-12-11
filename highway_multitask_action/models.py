@@ -82,7 +82,7 @@ class MultiLayerPerceptron(BaseModule, Configurable):
     @classmethod
     def default_config(cls):
         return {"in": None,
-                "layers": [64, 64],
+                "layers": [256, 256],
                 "activation": "RELU",
                 "reshape": "True",
                 "out": None}

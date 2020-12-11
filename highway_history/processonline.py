@@ -2,6 +2,7 @@ import numpy as np
 import copy
 import cv2 as cv
 import time
+import os
 from collections import deque
 
 from traspin import traSpin
@@ -14,10 +15,9 @@ class egoCar(object):
         self.y_pos = deque(maxlen = self.num_history)
 
     def initPos(self):
-        for i in range(self.num_history):
-            self.x_pos.append(0.0)
-            self.y_pos.append(0.0)
-
+        a = [0] * self.num_history
+        self.x_pos.extend(a)
+        self.y_pos.extend(a)
     def updatePos(self,x,y):
         self.x_pos.append(x)
         self.y_pos.append(y)
@@ -35,9 +35,9 @@ class obsCar(object):
         self.y_posList = deque(maxlen = self.num_history)
 
     def initPos(self):
-        for i in range(self.num_history):
-            self.x_posList.append(0.0)
-            self.y_posList.append(0.0)
+        a = [0] * self.num_history
+        self.x_posList.extend(a)
+        self.y_posList.extend(a)
 
     
     def updatePos(self,vehicle_list,ego_x,ego_y):
@@ -61,7 +61,7 @@ class obsCar(object):
         return x_currentPos,y_currentPos
             
 class preProcess(object):
-    def __init__(self,num_history = 20,disRange = 112):
+    def __init__(self,num_history = 10,disRange = 112):
         self.x_lim = disRange
         self.y_lim = disRange
         self.num = 0
@@ -75,6 +75,8 @@ class preProcess(object):
         self.obsVehicle = obsCar(self.num_history,disRange)
 
         self.ts = traSpin(self.x_lim,self.y_lim)
+
+        self.steps = 0
 
         self._init()
 
@@ -138,7 +140,7 @@ class preProcess(object):
         
         channel_tuple = tuple(channel_list)
         channel_array = np.stack((channel_tuple),axis=2)
-        channel_array = channel_array.reshape(40,112,112)
+        channel_array = channel_array.reshape(20,112,112)
 
         return channel_array
     
@@ -161,9 +163,14 @@ class preProcess(object):
             cv.circle(img, point, point_size, point_color, thickness)
         img_new = cv.resize(img,(112,112))
 
+        # filename = os.path.join("/home/dawei/highway_project/highway_history/vis",str(self.steps)+'.png')
+        # print(filename)
+        # self.steps += 1
+        # cv.imwrite(filename,img)
+
         # cv.namedWindow("image")
-        # cv.imshow('image', img_new)
-        # cv.waitKey (100) # 显示 10000 ms 即 10s 后消失
+        # cv.imshow('image', img)
+        # cv.waitKey (10) # 显示 10000 ms 即 10s 后消失
         # cv.destroyAllWindows()
         return self.Normalize(img_new)
         # return img_new

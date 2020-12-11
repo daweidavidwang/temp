@@ -25,13 +25,13 @@ class AbstractDQNAgent(AbstractStochasticAgent, ABC):
                                    k=5),
                     value_loss_function="l2",
                     action_loss_function = "weight",
-                    memory_capacity=50000,
-                    batch_size=100,
-                    gamma=0.99,
+                    memory_capacity=15000,
+                    batch_size=32,
+                    gamma=0.8,
                     device="cuda:best",
                     exploration=dict(method="EpsilonGreedy"),
-                    target_update=1,
-                    double=True)
+                    target_update=50,
+                    double=False)
 
     def record(self, state, action, reward, next_state, done, info):
         """

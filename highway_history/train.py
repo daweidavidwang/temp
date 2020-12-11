@@ -13,7 +13,7 @@ tensorboard_saved_dir = os.path.join(STORE_PATH,"tensorboard")
 writer = SummaryWriter(tensorboard_saved_dir)
 
 def write_tenboard(writer,episode,reward,step):
-    writer.add_scalar('episode/reward',np.mean(reward),episode)
+    writer.add_scalar('episode/reward',np.sum(reward),episode)
     writer.add_scalar('episode/step',step,episode)
 
 def train():
@@ -26,7 +26,6 @@ def train():
         step = 0
         state = ho.reset()
         while True:
-            ho.env.render()
             action = agent.act(state)
             next_state, reward, done, info = ho.step(action)
             #state, action, reward, next_state, done, info

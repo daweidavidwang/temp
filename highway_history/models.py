@@ -175,6 +175,65 @@ def vgg19_bn(**kwargs):
     kwargs.pop('model_root', None)
     return VGG(make_layers(cfg['E'], batch_norm=True), **kwargs)
 
+class TrajectoryFCN(BaseModule,Configurable):
+    def __init__(self,config):
+        super().__init__()
+        Configurable.__init__(self,config)
+        
+        
+        self.encoder_obs = nn.Sequential(
+            nn.Conv1d(int(self.config["in_channels"] / 2),32,kernel_size = (112,1)),
+            nn.ReLU(inplace = True)
+        )
+
+        self.encoder_ego = nn.Sequential(
+            nn.Conv1d(int(self.config["in_channels"] / 2),32,kernel_size = (112,1)),
+            nn.ReLU(inplace = True)
+        )
+
+        # self.encoder_map = nn.Sequential(
+        #     nn.Conv1d(3,12,kernel_size = (224,1)),
+        #     nn.ReLU(inplace = True)
+        # )
+
+        self.predict = nn.Sequential(
+            nn.Linear(32 * 1 * 112 + 32 * 1 * 112, 1024),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(1024, 60),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(60,self.config["action"])
+        )
+        self.reset()
+
+    def forward(self, x):
+        ego = x[:,:10:,:,:]
+        obs = x[:,10:,:,:]
+        #maps = x[:,42:,:,:]
+
+        latent_obs = self.encoder_obs(obs)
+        latent_ego = self.encoder_ego(ego)
+        #latent_maps = self.encoder_map(maps)
+
+        latent_obs = latent_obs.view(latent_obs.size(0), -1)
+        latent_ego = latent_ego.view(latent_ego.size(0), -1)
+        #latent_maps = latent_maps.view(latent_maps.size(0), -1)
+
+        latent = torch.cat((latent_ego,latent_obs),1)
+
+
+        predict = self.predict(latent)
+        return predict
+
+    @classmethod
+    def default_config(cls):
+        return {
+            "action" : 3,
+            "in_channels" : 20,
+        }
+
+
 def model_factory(config: dict) -> nn.Module:
     if config["type"] == "VGG11":
         return vgg11(config)
@@ -184,8 +243,13 @@ def model_factory(config: dict) -> nn.Module:
         return vgg16(config)
     elif config["type"] == "VGG19":
         return vgg19(config)
+    elif config["type"] == "VGG19":
+        return vgg19(config)
+    elif config["type"] == "FCN":
+        return TrajectoryFCN(config)
     else:
         raise ValueError("Unknown model type")
+
 
 if __name__ == "__main__":
     config = {

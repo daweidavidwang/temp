@@ -127,13 +127,13 @@ class KinematicObservation(ObservationType):
 
     def __init__(self, env: 'AbstractEnv',
                  features: List[str] = None,
-                 vehicles_count: int = 5,
+                 vehicles_count: int = 15,
                  features_range: Dict[str, List[float]] = None,
-                 absolute: bool = False,
+                 absolute: bool = True,
                  order: str = "sorted",
-                 normalize: bool = True,
-                 clip: bool = True,
-                 see_behind: bool = False,
+                 normalize: bool = False,
+                 clip: bool = False,
+                 see_behind: bool = True,
                  observe_intentions: bool = False,
                  **kwargs: dict) -> None:
         """

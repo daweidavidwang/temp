@@ -39,7 +39,7 @@ class HighwayEnv(AbstractEnv):
             "vehicles_count": 50,
             "controlled_vehicles": 1,
             "initial_lane_id": None,
-            "duration": 1000,  # [s]
+            "duration": 40 * 10,  # [s]
             "ego_spacing": 2,
             "vehicles_density": 1,
             "collision_reward": -1,  # The reward received when colliding with a vehicle.
