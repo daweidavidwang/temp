@@ -163,10 +163,10 @@ class preProcess(object):
             cv.circle(img, point, point_size, point_color, thickness)
         img_new = cv.resize(img,(112,112))
 
-        # filename = os.path.join("/home/dawei/highway_project/highway_history/vis",str(self.steps)+'.png')
-        # print(filename)
-        # self.steps += 1
-        # cv.imwrite(filename,img)
+        filename = os.path.join("/home/dawei/highway_project/highway_history/vis",str(self.steps)+'.png')
+        print(filename)
+        self.steps += 1
+        cv.imwrite(filename,img)
 
         # cv.namedWindow("image")
         # cv.imshow('image', img)

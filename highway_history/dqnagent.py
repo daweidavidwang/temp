@@ -88,6 +88,7 @@ class DQNAgent(AbstractDQNAgent):
         self.value_net.load_state_dict(checkpoint['state_dict'])
         self.target_net.load_state_dict(checkpoint['state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer'])
+        print("load model successful")
         return filename
 
     def initialize_model(self):

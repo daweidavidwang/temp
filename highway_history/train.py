@@ -20,7 +20,7 @@ def train():
     ho = historyObs()
     agent = DQNAgent(ho.env)
     agent.set_writer(writer)
-
+    agent.load("/home/dawei/highway_project/highway_history/model/35600")
     for episde in range(EPISODES):
         reward = []
         step = 0

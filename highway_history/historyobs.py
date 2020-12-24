@@ -3,6 +3,7 @@ import time
 from collections import deque
 from sklearn import preprocessing
 import numpy as np 
+import random
 
 import highway_env
 from processonline import preProcess,vehicle
@@ -54,7 +55,7 @@ if __name__ == "__main__":
     obs = ho.reset()
 
     for i in range(1000):
-        action = ho.env.action_type.actions_indexes["IDLE"]
+        action = random.randint(0,4)
         obs,reward,done,info = ho.step(action)
         print(obs.shape)
         ho.env.render()
